@@ -1,45 +1,32 @@
+import numpy as np
+
 class Trajectory(object):
     '''
-    Compute costs
     '''
-    def __init__(self, dynamics, x0, u0, T):
-
-        self.x0 = x0
-        self.u0 = u0
-
-        self.x = x0
-        self.u = u0
+    def __init__(self, dynamics, T):
+        
+        self.x = []
+        self.u = []
 
         self.dynamics = dynamics
-        self.state_costs = []
-        self.control_costs = []
 
-        self.t = 0
         self.T = T
+        self.nsteps = T / self.dynamics.dt
 
-
-    def unroll(self):        
+    def unroll(self, x0, controller):
         '''
-        Perturb, 
-        unroll trajectory, 
-        compute cost,
-        compute gradients
         '''
 
-        self.dynamics.perturb() # should be done by player 2?
+        # initial conditions
+        self.x.append(x0)
+        self.u.append(np.zeros(controller.input_dim))
 
-        while self.t < self.T and not self.dynamics.done :
-            
-            # compute state costs
-            
-            # control costs
+        for n in range(1, self.nsteps):
 
-            # compute gradients, 
-            # get saved for player 2?
+            self.x.append(self.dynamics.step(self.x[n-1], self.u[n-1]))
+            self.u.append(controller.get_control(self.x[n]))
 
-            self.x = self.dynamics.step(self.x, self.u)
-            self.u = self.dynamics.get_control(self.x)
-            
-            self.t += self.dynamics.dt
+            if self.dynamics.done:
+                break
 
-        return sum(self.state_costs)+sum(self.control_costs)
+        return self.x, self.u

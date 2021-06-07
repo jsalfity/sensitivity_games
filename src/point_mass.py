@@ -1,7 +1,7 @@
 from linear import Linear 
 
 class PointMass(Linear):
-    def __init__(self, m, dt, theta, K):
+    def __init__(self, m, dt, theta):
         '''
         input:
         m (int): mass
@@ -54,7 +54,7 @@ class PointMass(Linear):
              [0, 0],
              [0, 1/m]]
             
-        super().__init__(A, B, theta, K)
+        super().__init__(A, B, theta)
     
     def step(self, x, u):
         '''
@@ -85,6 +85,3 @@ class PointMass(Linear):
                 [1/m, 0],
                 [0, 0],
                 [0, 1/m]]
-    
-    def get_control(self, x):
-        return -self.K * x
