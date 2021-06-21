@@ -1,11 +1,12 @@
 from dynamics import Dynamics
 
+
 class Linear(Dynamics):
     def __init__(self, A, B, theta):
         super().__init__(state_dim=len(A),
-                        input_dim=len(B[0]),
-                        theta=theta)
-        
+                         input_dim=len(B[0]),
+                         theta=theta)
+
         self.A = A
         self.B = B
 
@@ -22,7 +23,7 @@ class Linear(Dynamics):
         '''
         Virtual
         '''
-        raise NotImplementedError('Not Implemented!')    
+        raise NotImplementedError('Not Implemented!')
 
     def modify_B(self):
         '''

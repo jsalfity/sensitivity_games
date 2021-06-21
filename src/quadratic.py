@@ -1,12 +1,13 @@
 from cost import Cost
 
+
 class Quadratic(Cost):
-    def __init__(self, weight, n, d):
+    def __init__(self, n, d, weight=1):
         '''
         Quadratic function acts on a single state
 
         input:
-        weight (int): quadratic cost value
+        weight (double): quadratic cost value
         n (double): nominal value
         d (int): dimension of z to act on
         '''
@@ -18,7 +19,7 @@ class Quadratic(Cost):
     def evaluate(self, z):
         '''
         input:
-        z (int): input dimension
+        z (list): input to cost
 
         return:
         quadratic cost

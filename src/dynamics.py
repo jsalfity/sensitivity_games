@@ -1,16 +1,16 @@
-class Dynamics(object):
 
-    def __init__(self, 
-                state_dim, 
-                input_dim,
-                theta,
-                T):
+class Dynamics(object):
+    '''
+    '''
+    def __init__(self,
+                 state_dim,
+                 input_dim,
+                 theta):
 
         # members
         self.state_dim = state_dim
         self.input_dim = input_dim
         self.theta = theta
-        self.done = False
 
     def step(self, x, u):
         '''
@@ -20,15 +20,15 @@ class Dynamics(object):
         input: u (np.array) action
         '''
         raise NotImplementedError('Not Implemented!')
-    
+
     def perturb(self):
         '''
         Virtual function in abstract Dynamics class
         '''
         raise NotImplementedError('Not Implemented!')
-    
-    def done(self):
+
+    def done(self, x):
         '''
         Virtual function in abstract Dynamics class
         '''
-        return self.done
+        return False
