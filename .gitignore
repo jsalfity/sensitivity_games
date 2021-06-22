@@ -100,3 +100,5 @@ dmypy.json
 data/.DS_Store
 
 .vscode
+
+todo.py

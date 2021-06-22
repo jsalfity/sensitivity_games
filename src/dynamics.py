@@ -27,6 +27,12 @@ class Dynamics(object):
         '''
         raise NotImplementedError('Not Implemented!')
 
+    def visualize(self, X, U, goal):
+        '''
+        Virtual function in abstract Dynamics class
+        '''
+        return False
+
     def done(self, x):
         '''
         Virtual function in abstract Dynamics class

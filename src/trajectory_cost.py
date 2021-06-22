@@ -33,6 +33,7 @@ class TrajectoryCost(object):
 
             total += sum(c.evaluate(x) for c in self.state_costs)
             total += sum(c.evaluate(u) for c in self.control_costs)
-            total -= sum(sum(c.evaluate(v) for c in self.theta_costs[k]) for k, v in dynamics.theta.items())
+            total -= sum(sum(c.evaluate(v) for c in self.theta_costs[k])
+                         for k, v in dynamics.theta.items())
 
         return total

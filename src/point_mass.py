@@ -1,5 +1,6 @@
 from linear import Linear
 from torch import Tensor
+from matplotlib import pyplot as plt
 
 
 class PointMass(Linear):
@@ -87,3 +88,19 @@ class PointMass(Linear):
                         [self.dt/m, 0],
                         [0, 0],
                         [0, self.dt/m]])
+
+    def visualize(self, X, U, goal):
+        '''
+        '''
+        xmax = max([x[0].detach() for x in X])
+        xmin = min([x[0].detach() for x in X])
+        ymax = max([x[2].detach() for x in X])
+        ymin = min([x[2].detach() for x in X])
+
+        plt.axis([xmin-2, xmax+2, ymin-2, ymax+2])
+        plt.grid()
+        plt.plot(goal[0], goal[2], 'xr')
+        for x, u in zip(X, U):
+            plt.plot(x.detach()[0], x.detach()[2], '.b')
+            plt.pause(0.001)
+        plt.close()
