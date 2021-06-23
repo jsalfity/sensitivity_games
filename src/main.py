@@ -22,8 +22,8 @@ def main():
     controller = LinearFeedbackController(dynamics)
 
     # simulation conditions
-    epochs = 10000
-    x0 = Tensor([1, 0, 1, 0])
+    epochs = 1000
+    x0 = Tensor([5, 0, 5, 0])
     goal = [0, 0, 0, 0]
     T = 10
 
@@ -66,12 +66,14 @@ def main():
 
         # print info
         if n % 100 == 0:
+            eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("epoch: {}, total_cost: {}".format(n, total_cost))
             print("K grad: {}".format(controller.K.grad))
             print("K value: {}".format(controller.K))
             print("theta grad: {}".format(dynamics.theta['dm'].grad))
             print("theta value: {}".format(dynamics.theta['dm']))
             print("dynamics B {}".format(dynamics.B))
+            print("eigVals: {}".format(eigVals))
             print(" ")
 
             if show_visualization:
@@ -86,9 +88,11 @@ def main():
     # simulate an optimal trajectory
     optimal_controller = LinearFeedbackController(dynamics)
     optimal_controller.K = dare_k
+    optimal_eigVal, _ = optimal_controller.get_eigenVals_eigenVecs()
     optimal_traj = Trajectory(dynamics, goal, T)
     optimal_X, optimal_U = optimal_traj.unroll(x0, optimal_controller)
     optimal_total_cost = traj_cost.evaluate(optimal_X, optimal_U, dynamics)
+    print("eigVals: {}".format(optimal_eigVal))
     print("total_cost: {}".format(optimal_total_cost))
 
     if show_visualization:

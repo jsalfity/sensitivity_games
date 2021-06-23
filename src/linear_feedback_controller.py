@@ -31,6 +31,11 @@ class LinearFeedbackController(Controller):
         term2 = self.dynamics.B.T@X@self.dynamics.A
         return term1@term2
 
+    def get_eigenVals_eigenVecs(self):
+        eigVals, eigVecs = linalg.eig(self.dynamics.A -
+                                      self.dynamics.B@self.K.detach())
+        return eigVals, eigVecs
+
     def get_control(self, x):
         '''
         '''
