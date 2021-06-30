@@ -1,4 +1,4 @@
-from cost import Cost
+from sensitivity_games.cost import Cost
 
 
 class Quadratic(Cost):

@@ -1,4 +1,4 @@
-from linear import Linear
+from sensitivity_games.linear import Linear
 from torch import Tensor
 from matplotlib import pyplot as plt
 

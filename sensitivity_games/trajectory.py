@@ -33,15 +33,3 @@ class Trajectory(object):
         '''
         '''
         self.dynamics.visualize(self.X, self.U, self.goal)
-        # xmax=max([x[0].detach() for x in self.X])
-        # xmin=min([x[0].detach() for x in self.X])
-        # ymax=max([x[2].detach() for x in self.X])
-        # ymin=min([x[2].detach() for x in self.X])
-
-        # plt.axis([xmin-2, xmax+2, ymin-2, ymax+2])
-        # plt.grid()
-        # plt.plot(self.goal[0],self.goal[2],'xr')
-        # for x, u in zip(self.X, self.U):
-        #     plt.plot(x.detach()[0], x.detach()[2],'.b')
-        #     plt.pause(0.001)
-        # plt.close()

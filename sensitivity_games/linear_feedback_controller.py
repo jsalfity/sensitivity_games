@@ -1,4 +1,4 @@
-from controller import Controller
+from sensitivity_games.controller import Controller
 from scipy import linalg
 import torch
 

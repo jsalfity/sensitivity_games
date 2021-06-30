@@ -1,4 +1,4 @@
-from dynamics import Dynamics
+from sensitivity_games.dynamics import Dynamics
 
 
 class Linear(Dynamics):
