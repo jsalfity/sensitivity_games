@@ -19,7 +19,7 @@ def _setup_parser():
     parser.add_argument("--viz", default=False)
     parser.add_argument("--verbose", default=True)
     parser.add_argument("--verbose_every", default=1000)
-    parser.add_argument("--epochs", default=100)
+    parser.add_argument("--epochs", default=10000)
     parser.add_argument("--lr", default=1e-3)
     parser.add_argument("--T", default=10)
 
@@ -86,7 +86,7 @@ def run_experiment():
         optimizer_theta.step()
 
         # print info
-        if n % 100 == 0 and args.verbose:
+        if n % args.verbose_every == 0 and args.verbose:
             eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("EPOCH: {}".format(n))
             print("total_cost: {}".format(total_cost))

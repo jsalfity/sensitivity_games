@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 from sensitivity_games.experiments.point_mass_regulation import run_experiment
-
+from sensitivity_games.linear_feedback_controller import LinearFeedbackController
 
 class Test_Point_Mass(TestCase):
 
@@ -17,14 +17,16 @@ class Test_Point_Mass(TestCase):
 
     def test_point_mass_experiment_K_grad_should_converge_to_zero(self):
         np.testing.assert_allclose(self.controller.K.grad,
-                                   np.zeros_like(self.controller.K.grad),
+                                   np.zeros_like(self.controller.K.grad,
+                                                 dtype=float),
                                    atol=1e-07)
         return
 
     def test_point_mass_experiment_theta_grad_should_converge_to_zero(self):
         np.testing.assert_allclose(self.dynamics.theta['dm'].grad,
                                    np.zeros_like(
-                                       self.dynamics.theta['dm'].grad),
+                                       self.dynamics.theta['dm'].grad,
+                                       dtype=float),
                                    atol=1e-07)
         return
 
@@ -33,12 +35,20 @@ class Test_Point_Mass(TestCase):
         x0 = Tensor([5, 0, 5, 0])
 
         X, U = self.traj.unroll(x0, self.controller)
-        converged_K = self.controller.K.detach()
         converged_K_cost = self.traj_cost.evaluate(X, U, self.dynamics)
 
+        # make a copy to not alter self.controller.K
+        test_controller = LinearFeedbackController(self.dynamics)
+
         for _ in range(0, 100):
-            self.controller.K = _random_perturb(converged_K.clone())
-            X, U = self.traj.unroll(x0, self.controller)
+            # set equal to converged self.controller.K
+            test_controller.K = self.controller.K.clone()
+
+            # perturb
+            test_controller.K = _random_perturb(test_controller.K.detach())
+
+            # unroll and calculate cost
+            X, U = self.traj.unroll(x0, test_controller)
             perturbed_K_cost = self.traj_cost.evaluate(X, U, self.dynamics)
             if perturbed_K_cost < converged_K_cost:
                 return False
