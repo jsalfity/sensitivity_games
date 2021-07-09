@@ -18,10 +18,10 @@ def _setup_parser():
 
     parser.add_argument("--viz", default=False)
     parser.add_argument("--verbose", default=True)
-    parser.add_argument("--verbose_every", default=1000)
+    parser.add_argument("--verbose_every", default=500)
     parser.add_argument("--epochs", default=10000)
     parser.add_argument("--lr", default=1e-3)
-    parser.add_argument("--T", default=10)
+    parser.add_argument("--T", default=25)
 
     return parser
 
@@ -58,6 +58,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=0))  # x
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
+    # TODO: is this weight too high?
     traj_cost.addThetaCost('dm', Quadratic(n=0, d=0))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
