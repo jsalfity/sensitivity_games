@@ -6,7 +6,8 @@ from torch import Tensor
 import numpy as np
 import random
 
-from sensitivity_games.experiments.point_mass_regulation import run_experiment
+from sensitivity_games.experiments.point_mass_regulation_train import (
+    run_experiment)
 from sensitivity_games.linear_feedback_controller import (
     LinearFeedbackController)
 from sensitivity_games.point_mass import PointMass

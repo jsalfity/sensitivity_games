@@ -9,7 +9,7 @@ To Do
 
 ## Getting Started
 ### Experimentation
-Experimentation for point mass regulation and training held at `point_mass_regulation.py`.
+Experimentation for point mass regulation and training held at `point_mass_regulation_train.py`.
 
 Arg parser controls these variables:
 
@@ -27,6 +27,9 @@ Variables hardcoded in the file:
 x0 = Tensor([5, 0, 5, 0])
 goal = [0, 0, 0, 0]
 ```
+
+To view a single trajectory with different K values, run `point_mass_regulation_viztraj.py`
+
 
 ### Test
 `test_point_mass.py` launches the experiment and training, then checks: 

@@ -19,9 +19,9 @@ def _setup_parser():
     parser.add_argument("--viz", default=False)
     parser.add_argument("--verbose", default=True)
     parser.add_argument("--verbose_every", default=500)
-    parser.add_argument("--epochs", default=10000)
+    parser.add_argument("--epochs", default=500)
     parser.add_argument("--lr", default=1e-3)
-    parser.add_argument("--T", default=25)
+    parser.add_argument("--T", default=10)
 
     return parser
 
@@ -34,7 +34,6 @@ x0 = Tensor([5, 0, 5, 0])
 goal = [0, 0, 0, 0]
 # T = 50
 # learning_rate = 1e-3
-
 
 def run_experiment():
 
@@ -87,7 +86,7 @@ def run_experiment():
         optimizer_theta.step()
 
         # print info
-        if n % args.verbose_every == 0 and args.verbose:
+        if (n % args.verbose_every == 0 and args.verbose) or n == args.epochs-1:
             eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("EPOCH: {}".format(n))
             print("total_cost: {}".format(total_cost))
@@ -95,7 +94,6 @@ def run_experiment():
             print("K value: {}".format(controller.K))
             print("theta grad: {}".format(dynamics.theta['dm'].grad))
             print("theta value: {}".format(dynamics.theta['dm']))
-            print("dynamics B {}".format(dynamics.B))
             print("eigVals: {}".format(eigVals))
             print(" ")
             print("________________________")
