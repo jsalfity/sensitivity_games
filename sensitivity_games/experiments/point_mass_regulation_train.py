@@ -18,7 +18,7 @@ def _setup_parser():
 
     parser.add_argument("--viz", type=bool, default=False)
     parser.add_argument("--verbose", type=bool, default=True)
-    parser.add_argument("--verbose_freq", type=int, default=500)
+    parser.add_argument("--verbose_freq", type=int, default=100)
     parser.add_argument("--epochs", type=int, default=500)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--T", type=int, default=10)
@@ -44,7 +44,7 @@ def run_experiment():
                          theta={'dm': torch.ones(1, requires_grad=True)})
 
     # create controller
-    controller = LinearFeedbackController(dynamics)
+    controller = LinearFeedbackController(dynamics, xf)
 
     traj_cost = TrajectoryCost()
     traj_cost.addStateCost(Quadratic(n=xf[0], d=0))  # x position
@@ -111,7 +111,7 @@ def run_experiment():
         print("DARE K: {}".format(dare_k))
 
     # simulate an optimal trajectory
-    optimal_controller = LinearFeedbackController(dynamics)
+    optimal_controller = LinearFeedbackController(dynamics, xf)
     optimal_controller.K = dare_k
     optimal_eigVal, _ = optimal_controller.get_eigenVals_eigenVecs()
     optimal_traj = Trajectory(dynamics, xf, args.T)
