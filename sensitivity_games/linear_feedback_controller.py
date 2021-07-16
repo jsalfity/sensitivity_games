@@ -1,15 +1,16 @@
-from sensitivity_games.controller import Controller
+from sensitivity_games.regulator_controller import RegulatorController
 from scipy import linalg
 import torch
 
 
-class LinearFeedbackController(Controller):
+class LinearFeedbackController(RegulatorController):
     '''
     '''
     def __init__(self,
-                 dynamics):
+                 dynamics,
+                 xf):
 
-        super().__init__(dynamics)
+        super().__init__(dynamics, xf)
         # self.K = torch.randn(dynamics.input_dim,
         #                      dynamics.state_dim,requires_grad=True)
 
@@ -39,4 +40,4 @@ class LinearFeedbackController(Controller):
     def get_control(self, x):
         '''
         '''
-        return -self.K @ x
+        return -self.K @ (x - self.xf)

@@ -49,7 +49,7 @@ def run_trajectory():
                          theta={'dm': Tensor([args.dm])})
 
     # create controller
-    controller = LinearFeedbackController(dynamics)
+    controller = LinearFeedbackController(dynamics, xf)
     controller.K = Tensor(np.array(args.K).reshape(2, 4))
 
     traj_cost = TrajectoryCost()
