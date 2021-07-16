@@ -17,12 +17,12 @@ class Trajectory(object):
         '''
         # initial conditions
         self.X = [x0]
-        self.U = [controller.get_control(x0, self.xf)]
+        self.U = [controller.get_control(x0)]
 
         for _ in range(1, self.nsteps):
 
             self.X.append(self.dynamics.step(self.X[-1], self.U[-1]))
-            self.U.append(controller.get_control(self.X[-1], self.xf))
+            self.U.append(controller.get_control(self.X[-1]))
 
             # if self.dynamics.done(self.x[n-1]):
             #     break
