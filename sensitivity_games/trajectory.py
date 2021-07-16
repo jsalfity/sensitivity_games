@@ -1,7 +1,7 @@
 class Trajectory(object):
     '''
     '''
-    def __init__(self, dynamics, goal, T):
+    def __init__(self, dynamics, xf, T):
 
         self.X = []
         self.U = []
@@ -10,7 +10,7 @@ class Trajectory(object):
 
         self.T = T
         self.nsteps = int(T / self.dynamics.dt)
-        self.goal = goal
+        self.xf = xf
 
     def unroll(self, x0, controller):
         '''
@@ -29,7 +29,7 @@ class Trajectory(object):
 
         return self.X, self.U
 
-    def visualize(self):
+    def visualize(self, block):
         '''
         '''
-        self.dynamics.visualize(self.X, self.U, self.goal)
+        self.dynamics.visualize(self.X, self.U, self.xf, block)

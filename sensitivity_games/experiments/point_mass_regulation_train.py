@@ -16,29 +16,27 @@ def _setup_parser():
     """Set up Python's ArgumentParser with params"""
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument("--viz", default=False)
-    parser.add_argument("--verbose", default=True)
-    parser.add_argument("--verbose_every", default=500)
-    parser.add_argument("--epochs", default=500)
-    parser.add_argument("--lr", default=1e-3)
-    parser.add_argument("--T", default=10)
+    parser.add_argument("--viz", type=bool, default=False)
+    parser.add_argument("--verbose", type=bool, default=True)
+    parser.add_argument("--verbose_freq", type=int, default=500)
+    parser.add_argument("--epochs", type=int, default=500)
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--T", type=int, default=10)
+    parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 5, 0])
+    parser.add_argument("--xf", nargs='+', type=float, default=[0, 0, 0, 0])
+    parser.add_argument("--block", type=bool, default=False)
 
     return parser
 
-
-# simulation conditions
-# show_visualization = False
-# print_stats = True
-# epochs = 15000
-x0 = Tensor([5, 0, 5, 0])
-goal = [0, 0, 0, 0]
-# T = 50
-# learning_rate = 1e-3
 
 def run_experiment():
 
     parser = _setup_parser()
     args = parser.parse_args()
+
+    # initial conditions
+    x0 = Tensor(np.array(args.x0))
+    xf = Tensor(np.array(args.xf))
 
     # create dynamics
     dynamics = PointMass(m=1,
@@ -49,10 +47,10 @@ def run_experiment():
     controller = LinearFeedbackController(dynamics)
 
     traj_cost = TrajectoryCost()
-    traj_cost.addStateCost(Quadratic(n=goal[0], d=0))  # x position
-    # traj_cost.addStateCost(Quadratic(n=goal[1], d=1))  # x velocity
-    traj_cost.addStateCost(Quadratic(n=goal[2], d=2))  # y position
-    # traj_cost.addStateCost(Quadratic(n=goal[3], d=3))  # y velocity
+    traj_cost.addStateCost(Quadratic(n=xf[0], d=0))  # x position
+    # traj_cost.addStateCost(Quadratic(n=xf[1], d=1))  # x velocity
+    traj_cost.addStateCost(Quadratic(n=xf[2], d=2))  # y position
+    # traj_cost.addStateCost(Quadratic(n=xf[3], d=3))  # y velocity
 
     traj_cost.addControlCost(Quadratic(n=0, d=0))  # x
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
@@ -71,7 +69,7 @@ def run_experiment():
         dynamics.perturb()
 
         # unroll trajectory
-        traj = Trajectory(dynamics, goal, args.T)
+        traj = Trajectory(dynamics, xf, args.T)
         X, U = traj.unroll(x0, controller)
 
         # do gradient update
@@ -86,20 +84,23 @@ def run_experiment():
         optimizer_theta.step()
 
         # print info
-        if (n % args.verbose_every == 0 and args.verbose) or n == args.epochs-1:
+        if (n % args.verbose_freq == 0 and args.verbose) or n == args.epochs-1:
             eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("EPOCH: {}".format(n))
             print("total_cost: {}".format(total_cost))
-            print("K grad: {}".format(controller.K.grad))
             print("K value: {}".format(controller.K))
-            print("theta grad: {}".format(dynamics.theta['dm'].grad))
+            print("K grad: {}".format(controller.K.grad))
             print("theta value: {}".format(dynamics.theta['dm']))
+            print("theta grad: {}".format(dynamics.theta['dm'].grad))
             print("eigVals: {}".format(eigVals))
+            print("x0: {}".format(x0))
+            print("xf (goal): {}".format(xf))
+            print("xf (actual): {}".format(X[-1]))
             print(" ")
             print("________________________")
 
             if args.viz:
-                traj.visualize()
+                traj.visualize(args.block)
 
     # check dare k
     R = np.eye(dynamics.input_dim, dtype=int)
@@ -107,22 +108,22 @@ def run_experiment():
     dare_k = controller.solve_dare_for_k(Q, R)
 
     if args.verbose:
-        print("dare K: {}".format(dare_k))
+        print("DARE K: {}".format(dare_k))
 
     # simulate an optimal trajectory
     optimal_controller = LinearFeedbackController(dynamics)
     optimal_controller.K = dare_k
     optimal_eigVal, _ = optimal_controller.get_eigenVals_eigenVecs()
-    optimal_traj = Trajectory(dynamics, goal, args.T)
+    optimal_traj = Trajectory(dynamics, xf, args.T)
     optimal_X, optimal_U = optimal_traj.unroll(x0, optimal_controller)
     optimal_total_cost = traj_cost.evaluate(optimal_X, optimal_U, dynamics)
 
     if args.verbose:
-        print("eigVals: {}".format(optimal_eigVal))
-        print("total_cost: {}".format(optimal_total_cost))
+        print("DARE eigVals: {}".format(optimal_eigVal))
+        print("DARE total_cost: {}".format(optimal_total_cost))
 
     if args.viz:
-        optimal_traj.visualize()
+        optimal_traj.visualize(args.block)
 
     return dynamics, controller, optimal_controller, traj, traj_cost
 

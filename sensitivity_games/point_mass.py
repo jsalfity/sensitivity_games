@@ -89,7 +89,7 @@ class PointMass(Linear):
                         [0, 0],
                         [0, self.dt/m]])
 
-    def visualize(self, X, U, goal):
+    def visualize(self, X, U, goal, block):
         '''
         '''
         xmax = max([x[0].detach() for x in X])
@@ -97,10 +97,38 @@ class PointMass(Linear):
         ymax = max([x[2].detach() for x in X])
         ymin = min([x[2].detach() for x in X])
 
-        plt.axis([xmin-2, xmax+2, ymin-2, ymax+2])
-        plt.grid()
-        plt.plot(goal[0], goal[2], 'xr')
+        u1max = max([u[0].detach() for u in U])
+        u1min = min([u[0].detach() for u in U])
+        u2max = max([u[1].detach() for u in U])
+        u2min = min([u[1].detach() for u in U])
+
+        # plt.axis([xmin-2, xmax+2, ymin-2, ymax+2])
+        # plt.grid()
+        # plt.plot(goal[0], goal[2], 'xr')
+        # for x, u in zip(X, U):
+        #     plt.plot(x.detach()[0], x.detach()[2], '.b')
+        #     plt.pause(0.001)
+        # plt.close()
+
+        fig, (x_ax, u_ax) = plt.subplots(2, 1)
+        x_ax.grid()
+        u_ax.grid()
+
+        x_ax.axis([xmin-2, xmax+2, ymin-2, ymax+2])
+        x_ax.plot(goal[0], goal[2], 'xr')
+        x_ax.set_xlabel('x position')
+        x_ax.set_ylabel('y position')
+
+        u_ax.axis([0, len(U), min(u1min, u2min) - 2, max(u1max, u2max) + 2])
+        u_ax.set_ylabel('control effort')
+        u_ax.set_xlabel('Time step (dt)')
+        t = 0
         for x, u in zip(X, U):
-            plt.plot(x.detach()[0], x.detach()[2], '.b')
+            x_ax.plot(x.detach()[0], x.detach()[2], '.b')
+            u_ax.plot(t, u[0].detach(), '.r')
+            u_ax.plot(t, u[1].detach(), '.k')
+            u_ax.legend(['u0', 'u1'])
+            t += 1
             plt.pause(0.001)
-        plt.close()
+
+        plt.show(block=block)
