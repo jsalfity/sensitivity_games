@@ -6,7 +6,7 @@ class Controller(object):
 
         self.dynamics = dynamics
 
-    def get_control(self, x):
+    def get_control(self, x, xf):
         '''
         Virtual function in abstract Controller class
         '''

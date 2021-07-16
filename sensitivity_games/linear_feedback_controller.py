@@ -36,7 +36,7 @@ class LinearFeedbackController(Controller):
                                       self.dynamics.B@self.K.detach())
         return eigVals, eigVecs
 
-    def get_control(self, x):
+    def get_control(self, x, xf):
         '''
         '''
-        return -self.K @ x
+        return -self.K @ (x - xf)
