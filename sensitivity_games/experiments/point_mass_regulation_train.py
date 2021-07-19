@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import random
 
 from sensitivity_games.linear_feedback_controller import (
     LinearFeedbackController)
@@ -35,7 +36,7 @@ def run_experiment():
     args = parser.parse_args()
 
     # initial conditions
-    x0 = Tensor(np.array(args.x0))
+    # x0 = Tensor(np.array(args.x0))
     xf = Tensor(np.array(args.xf))
 
     # create dynamics
@@ -67,6 +68,9 @@ def run_experiment():
 
         # perturb with thetas
         dynamics.perturb()
+
+        # randomize x0
+        x0 = Tensor([random.random(-5, 5), 0, random.random(-5, 5), 0])
 
         # unroll trajectory
         traj = Trajectory(dynamics, xf, args.T)

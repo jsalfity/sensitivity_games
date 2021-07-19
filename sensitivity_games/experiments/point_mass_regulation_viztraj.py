@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import random
 
 from sensitivity_games.linear_feedback_controller import (
     LinearFeedbackController)
@@ -27,7 +28,7 @@ def _setup_parser():
     parser.add_argument("--T", type=int, default=10)
     parser.add_argument("--K", nargs='+', type=float, default=dare_K)
     parser.add_argument("--dm", type=float, default=0.0)
-    parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 10, 0])
+    parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 5, 0])
     parser.add_argument("--xf", nargs='+', type=float, default=[0, 0, 0, 0])
     parser.add_argument("--block", type=bool, default=True)
 
@@ -40,7 +41,8 @@ def run_trajectory():
     args = parser.parse_args()
 
     # initial conditions
-    x0 = Tensor(np.array(args.x0))
+    # x0 = Tensor(np.array(args.x0))
+    x0 = Tensor([random.random(-5, 5), 0, random.random(-5, 5), 0])
     xf = Tensor(np.array(args.xf))
 
     # create dynamics
