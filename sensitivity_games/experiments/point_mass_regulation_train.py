@@ -70,7 +70,7 @@ def run_experiment():
         dynamics.perturb()
 
         # randomize x0
-        x0 = Tensor([random.random(-5, 5), 0, random.random(-5, 5), 0])
+        x0 = Tensor([random.uniform(-5, 5), 0, random.uniform(-5, 5), 0])
 
         # unroll trajectory
         traj = Trajectory(dynamics, xf, args.T)

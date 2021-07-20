@@ -12,8 +12,8 @@ from sensitivity_games.trajectory_cost import TrajectoryCost
 from torch import Tensor
 
 # converged K
-converged_K = [1.0732,  0.9308, -0.1415,  0.4819,
-               0.7332,  1.0240,  0.1986,  0.3886]
+converged_K = [9.3169e-01,  1.4124e+00,  1.3709e-07, -1.7353e-07,
+               -3.4798e-06,  3.4416e-06,  9.3169e-01,  1.4124e+00],
 
 # dare K
 dare_K = [9.1704e-01,  1.6821e+00, -2.8130e-15, -1.4998e-15,
