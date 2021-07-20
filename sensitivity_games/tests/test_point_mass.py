@@ -99,6 +99,8 @@ class Test_Point_Mass(TestCase):
     def test_point_mass_should_converge_to_dare_k(self):
         # TODO: push out T until close, find 'infinite' T
 
+        # hack to drop the small zeros, i.e 1e-03, 1e-07,
+        # for np.testing.assert_allclose()
         x1 = np.where(self.controller.K.detach() > zero_tolerance,
                       self.controller.K.detach(), 0.0)
 
@@ -107,7 +109,8 @@ class Test_Point_Mass(TestCase):
 
         np.testing.assert_allclose(x1, x2, atol=zero_tolerance)
 
-        # Doesn't work due to very small floats
+        # Doesn't work due to very small floats.
+        # Might work by looking at torch docs
         # np.testing.assert_allclose(self.controller.K.detach(),
         #                            self.optimal_controller.K.detach(),
         #                            atol=zero_tolerance)
