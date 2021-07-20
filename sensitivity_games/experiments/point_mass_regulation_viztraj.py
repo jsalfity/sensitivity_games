@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import random
 
 from sensitivity_games.linear_feedback_controller import (
     LinearFeedbackController)
@@ -11,8 +12,8 @@ from sensitivity_games.trajectory_cost import TrajectoryCost
 from torch import Tensor
 
 # converged K
-converged_K = [1.0732,  0.9308, -0.1415,  0.4819,
-               0.7332,  1.0240,  0.1986,  0.3886]
+converged_K = [9.3169e-01,  1.4124e+00,  1.3709e-07, -1.7353e-07,
+               -3.4798e-06,  3.4416e-06,  9.3169e-01,  1.4124e+00],
 
 # dare K
 dare_K = [9.1704e-01,  1.6821e+00, -2.8130e-15, -1.4998e-15,
@@ -27,7 +28,7 @@ def _setup_parser():
     parser.add_argument("--T", type=int, default=10)
     parser.add_argument("--K", nargs='+', type=float, default=dare_K)
     parser.add_argument("--dm", type=float, default=0.0)
-    parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 10, 0])
+    parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 5, 0])
     parser.add_argument("--xf", nargs='+', type=float, default=[0, 0, 0, 0])
     parser.add_argument("--block", type=bool, default=True)
 
@@ -40,7 +41,8 @@ def run_trajectory():
     args = parser.parse_args()
 
     # initial conditions
-    x0 = Tensor(np.array(args.x0))
+    # x0 = Tensor(np.array(args.x0))
+    x0 = Tensor([random.random(-5, 5), 0, random.random(-5, 5), 0])
     xf = Tensor(np.array(args.xf))
 
     # create dynamics
