@@ -26,7 +26,7 @@ def _setup_parser():
 
     parser.add_argument("--viz", type=bool, default=True)
     parser.add_argument("--T", type=int, default=10)
-    parser.add_argument("--K", nargs='+', type=float, default=dare_K)
+    parser.add_argument("--K", nargs='+', type=float, default=converged_K)
     parser.add_argument("--dm", type=float, default=0.0)
     parser.add_argument("--x0", nargs='+', type=float, default=[5, 0, 5, 0])
     parser.add_argument("--xf", nargs='+', type=float, default=[0, 0, 0, 0])
@@ -41,8 +41,7 @@ def run_trajectory():
     args = parser.parse_args()
 
     # initial conditions
-    # x0 = Tensor(np.array(args.x0))
-    x0 = Tensor([random.random(-5, 5), 0, random.random(-5, 5), 0])
+    x0 = Tensor(np.array(args.x0))
     xf = Tensor(np.array(args.xf))
 
     # create dynamics
