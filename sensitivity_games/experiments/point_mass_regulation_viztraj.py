@@ -1,6 +1,5 @@
 import argparse
 import numpy as np
-import random
 
 from sensitivity_games.linear_feedback_controller import (
     LinearFeedbackController)
