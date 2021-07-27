@@ -20,7 +20,7 @@ def _setup_parser():
     parser.add_argument("--viz", type=bool, default=False)
     parser.add_argument("--verbose", type=bool, default=True)
     parser.add_argument("--verbose_freq", type=int, default=100)
-    parser.add_argument("--epochs", type=int, default=500)
+    parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--T", type=int, default=10)
     parser.add_argument("--x0_limit", type=float, default=5)
@@ -110,8 +110,18 @@ def run_experiment():
                 traj.visualize(args.block)
 
     # check dare k
-    R = np.eye(dynamics.input_dim, dtype=int)
-    Q = np.eye(dynamics.state_dim, dtype=int)
+
+    # Q is 2nd derivative of df/dx
+    # Guess:
+    # Q = np.array([[1, 0, 0, 0 ],
+    #               [0, 0, 0, 0 ],
+    #               [0, 0, 1, 0 ],
+    #               [0, 0, 0, 0 ]])
+    # R is 2nd derivative of df/du
+    # Guess
+    # R = np.eye(dynamics.input_dim, dtype=int)
+
+    Q, R = traj_cost.evaluate_grad2()
     dare_k = controller.solve_dare_for_k(Q, R)
 
     if args.verbose:

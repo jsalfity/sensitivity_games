@@ -25,3 +25,5 @@ class Quadratic(Cost):
         quadratic cost
         '''
         return self.weight * (self.n-z[self.d])**2
+
+    # TODO take 2nd derivative here
