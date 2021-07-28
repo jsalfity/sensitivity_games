@@ -28,12 +28,13 @@ class TrajectoryCost(object):
         '''
         total = 0.0
 
-        # compute costs
-        for x, u in zip(X, U):
+        # compute theta costs
+        total -= sum(sum(c.evaluate(v) for c in self.theta_costs[k])
+                        for k, v in dynamics.theta.items())
 
+        # compute trajectory costs
+        for x, u in zip(X, U):
             total += sum(c.evaluate(x) for c in self.state_costs)
             total += sum(c.evaluate(u) for c in self.control_costs)
-            total -= sum(sum(c.evaluate(v) for c in self.theta_costs[k])
-                         for k, v in dynamics.theta.items())
 
         return total

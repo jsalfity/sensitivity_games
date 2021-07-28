@@ -56,7 +56,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
     # TODO: is this weight too high?
-    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0))
+    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0.1))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
     optimizer_theta = torch.optim.Adam(dynamics.theta.values(),
@@ -79,6 +79,8 @@ def run_experiment():
         traj = Trajectory(dynamics, xf, args.T)
         X, U = traj.unroll(x0, controller)
 
+        if n == 499:
+            print('hi')
         # do gradient update
         total_cost = traj_cost.evaluate(X, U, dynamics)
 
