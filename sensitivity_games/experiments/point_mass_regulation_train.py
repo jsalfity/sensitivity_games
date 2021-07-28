@@ -79,8 +79,6 @@ def run_experiment():
         traj = Trajectory(dynamics, xf, args.T)
         X, U = traj.unroll(x0, controller)
 
-        if n == 499:
-            print('hi')
         # do gradient update
         total_cost = traj_cost.evaluate(X, U, dynamics)
 
