@@ -44,24 +44,19 @@ class PointMass(Linear):
              [0 dt/m]]
         '''
         self.dt = dt
+        self.m_bar = m  # nominal
         self.m = m
         self.theta = theta
 
         A = torch.tensor([[1, dt, 0, 0],
                          [0, 1.0, 0, 0],
                          [0, 0, 1.0, dt],
-                         [0, 0, 0, 1.0]],
-                         requires_grad=True)
+                         [0, 0, 0, 1.0]])
 
         B = torch.tensor([[0, 0],
                          [dt/m, 0],
                          [0, 0],
-                         [0, dt/m]],
-                         requires_grad=True)
-        # B = Tensor([[0, 0],
-        #             [dt/m, 0],
-        #             [0, 0],
-        #             [0, dt/m]])
+                         [0, dt/m]])
 
         super().__init__(A, B, theta)
 
@@ -88,18 +83,25 @@ class PointMass(Linear):
     def modify_B(self):
         '''
         '''
-        m = self.m * (1+self.theta['dm'])
+        self.m = self.m_bar * (1+self.theta['dm'])
 
+        # FIXME
+        # packing self.m into self.B is losing self.theta['dm'] on comp graph
         self.B = torch.tensor([[0, 0],
-                              [self.dt/m, 0],
+                              [self.dt/self.m, 0],
                               [0, 0],
-                              [0, self.dt/m]],
+                              [0, self.dt/self.m]],
                               requires_grad=True)
 
-        # self.B = Tensor([[0, 0],
-        #                 [self.dt/m, 0],
-        #                 [0, 0],
-        #                 [0, self.dt/m]])
+        # interesting approach to kick this somewhere
+        # by multiplying by torch.eye(4), self.B.grad_fn=MmBackwards,
+        # and self.B.is_leaf=True
+        # self.B = torch.eye(4) @ torch.tensor([[0, 0],
+        #                                         [self.dt/self.m, 0],
+        #                                         [0, 0],
+        #                                         [0, self.dt/self.m]],
+        #                                         requires_grad=True)
+        return
 
     def visualize(self, X, U, xf, block):
         '''

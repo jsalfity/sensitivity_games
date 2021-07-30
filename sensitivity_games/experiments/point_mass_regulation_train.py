@@ -56,7 +56,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
     # TODO: is this weight too high?
-    # traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=1e-5))
+    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
     optimizer_theta = torch.optim.Adam(dynamics.theta.values(),
@@ -85,6 +85,7 @@ def run_experiment():
         optimizer_theta.zero_grad()
 
         # dtotal/dtheta[dm], dtotal/dstate_cost dtotal/dcontrol_cost
+        # dynamics.theta['dm'].backward() # hack , but not correct
         total_cost.backward()
 
         optimizer_k.step()
@@ -95,10 +96,10 @@ def run_experiment():
             # eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("EPOCH: {}".format(n))
             print("total_cost: {}".format(total_cost))
-            print("K value: {}".format(controller.K))
-            print("K grad: {}".format(controller.K.grad))
-            print("theta['dm'] value: {}".format(dynamics.theta['dm']))
-            print("theta['dm'] grad: {}".format(dynamics.theta['dm'].grad))
+            print("controller.K: {}".format(controller.K))
+            print("controller.K.grad: {}".format(controller.K.grad))
+            print("dynamics.theta['dm']: {}".format(dynamics.theta['dm']))
+            print("dynamics.theta['dm'].grad: {}".format(dynamics.theta['dm'].grad))
             # print("eigVals: {}".format(eigVals))
             print("x0: {}".format(x0))
             print("xf (goal): {}".format(xf))
