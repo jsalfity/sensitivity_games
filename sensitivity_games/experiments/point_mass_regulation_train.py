@@ -10,8 +10,8 @@ from sensitivity_games.quadratic import Quadratic
 from sensitivity_games.trajectory_cost import TrajectoryCost
 
 import torch.optim
-from torch import Tensor
-import torch
+import torch.tensor
+
 
 def _setup_parser():
     """Set up Python's ArgumentParser with params"""
@@ -36,7 +36,7 @@ def run_experiment():
     args = parser.parse_args()
 
     # initial conditions
-    xf = Tensor(np.array(args.xf))
+    xf = torch.tensor(np.array(args.xf))
 
     # create dynamics
     dynamics = PointMass(m=1,
@@ -70,11 +70,9 @@ def run_experiment():
 
         # randomize x0
         x0 = torch.tensor([random.uniform(-args.x0_limit, args.x0_limit),
-                     0,
-                     random.uniform(-args.x0_limit, args.x0_limit),
-                     0],
-                     requires_grad=True
-                    )
+                           0,
+                           random.uniform(-args.x0_limit, args.x0_limit),
+                           0])
 
         # unroll trajectory
         traj = Trajectory(dynamics, xf, args.T)
@@ -86,7 +84,8 @@ def run_experiment():
         optimizer_k.zero_grad()
         optimizer_theta.zero_grad()
 
-        total_cost.backward() # dtotal/dtheta[dm] dtotal/dstate_cost #
+        # dtotal/dtheta[dm], dtotal/dstate_cost dtotal/dcontrol_cost
+        total_cost.backward()
 
         optimizer_k.step()
         optimizer_theta.step()
@@ -98,8 +97,8 @@ def run_experiment():
             print("total_cost: {}".format(total_cost))
             print("K value: {}".format(controller.K))
             print("K grad: {}".format(controller.K.grad))
-            print("theta value: {}".format(dynamics.theta['dm']))
-            print("theta grad: {}".format(dynamics.theta['dm'].grad))
+            print("theta['dm'] value: {}".format(dynamics.theta['dm']))
+            print("theta['dm'] grad: {}".format(dynamics.theta['dm'].grad))
             # print("eigVals: {}".format(eigVals))
             print("x0: {}".format(x0))
             print("xf (goal): {}".format(xf))

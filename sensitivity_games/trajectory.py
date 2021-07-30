@@ -1,5 +1,3 @@
-import torch
-
 class Trajectory(object):
     '''
     '''
