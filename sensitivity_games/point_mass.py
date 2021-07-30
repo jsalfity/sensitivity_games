@@ -1,7 +1,7 @@
 from sensitivity_games.linear import Linear
 from torch import Tensor
 from matplotlib import pyplot as plt
-
+import torch
 
 class PointMass(Linear):
     def __init__(self, m, dt, theta):
@@ -52,10 +52,15 @@ class PointMass(Linear):
                     [0, 0, 1.0, dt],
                     [0, 0, 0, 1.0]])
 
-        B = Tensor([[0, 0],
+        B = torch.tensor([[0, 0],
                     [dt/m, 0],
                     [0, 0],
-                    [0, dt/m]])
+                    [0, dt/m]], 
+                    requires_grad=True)
+        # B = Tensor([[0, 0],
+        #             [dt/m, 0],
+        #             [0, 0],
+        #             [0, dt/m]])
 
         super().__init__(A, B, theta)
 
@@ -84,10 +89,16 @@ class PointMass(Linear):
         '''
         m = self.m * (1+self.theta['dm'])
 
-        self.B = Tensor([[0, 0],
-                        [self.dt/m, 0],
-                        [0, 0],
-                        [0, self.dt/m]])
+        self.B = torch.tensor([[0, 0],
+                              [self.dt/m, 0],
+                              [0, 0],
+                              [0, self.dt/m]], 
+                              requires_grad=True)
+
+        # self.B = Tensor([[0, 0],
+        #                 [self.dt/m, 0],
+        #                 [0, 0],
+        #                 [0, self.dt/m]])
 
     def visualize(self, X, U, xf, block):
         '''
