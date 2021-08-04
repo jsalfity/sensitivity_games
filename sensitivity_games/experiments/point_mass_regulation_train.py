@@ -22,7 +22,9 @@ def _setup_parser():
     parser.add_argument("--epochs", type=int, default=5000)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--T", type=int, default=10)
-    parser.add_argument("--x0_limit", type=float, default=5)
+    parser.add_argument("--x0_limit", nargs='+',
+                        type=float, default=[5, 0, 5, 0])
+    parser.add_argument("--x0_rand", type=bool, default=True)
     parser.add_argument("--xf", nargs='+', type=float, default=[0, 0, 0, 0])
     parser.add_argument("--block", type=bool, default=False)
 
@@ -54,8 +56,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=0))  # x
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
-    # TODO: is this weight too high?
-    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
+    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=25))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
     optimizer_theta = torch.optim.Adam(dynamics.theta.values(),
@@ -67,11 +68,20 @@ def run_experiment():
         # perturb with thetas
         dynamics.perturb()
 
-        # randomize x0
-        x0 = torch.tensor([random.uniform(-args.x0_limit, args.x0_limit),
-                           0,
-                           random.uniform(-args.x0_limit, args.x0_limit),
-                           0])
+        x0 = torch.tensor([float(args.x0_limit[0]),
+                           float(args.x0_limit[1]),
+                           float(args.x0_limit[2]),
+                           float(args.x0_limit[3])])
+
+        if args.x0_rand is True:
+            x0 = torch.tensor([random.uniform(-args.x0_limit[0],
+                                              args.x0_limit[0]),
+                               random.uniform(-args.x0_limit[1],
+                                              args.x0_limit[1]),
+                               random.uniform(-args.x0_limit[2],
+                                              args.x0_limit[2]),
+                               random.uniform(-args.x0_limit[3],
+                                              args.x0_limit[3])])
 
         # unroll trajectory
         traj = Trajectory(dynamics, xf, args.T)
@@ -103,8 +113,7 @@ def run_experiment():
             print("x0: {}".format(x0))
             print("xf (goal): {}".format(xf))
             print("xf (actual): {}".format(X[-1]))
-            print(" ")
-            print("________________________")
+            print("________________________________________________")
 
             if args.viz:
                 traj.visualize(args.block)

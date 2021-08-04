@@ -92,7 +92,6 @@ class PointMass(Linear):
         B4 = torch.cat((torch.tensor([0]), self.dt/self.m))
 
         self.B = torch.stack((B1, B2, B3, B4))
-
         return
 
     def visualize(self, X, U, xf, block):
@@ -139,3 +138,4 @@ class PointMass(Linear):
 
         plt.show(block=block)
         plt.close()
+        return
