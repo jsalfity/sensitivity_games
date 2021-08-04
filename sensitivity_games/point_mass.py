@@ -85,15 +85,7 @@ class PointMass(Linear):
         '''
         self.m = self.m_bar * (1+self.theta['dm'])
 
-        # FIXME
-        # packing self.m into self.B is losing self.theta['dm'] on comp graph
-        # self.B = torch.tensor([[0, 0],
-        #                       [self.dt/self.m, 0],
-        #                       [0, 0],
-        #                       [0, self.dt/self.m]],
-        #                       requires_grad=True)
-
-        # Whacky solution which may work
+        # Insert self.theta['dm'] into self.B without losing on comp graph
         B1 = torch.tensor([0, 0])
         B2 = torch.cat((self.dt/self.m, torch.tensor([0])))
         B3 = torch.tensor([0, 0])
@@ -101,14 +93,6 @@ class PointMass(Linear):
 
         self.B = torch.stack((B1, B2, B3, B4))
 
-        # interesting approach to kick this somewhere
-        # by multiplying by torch.eye(4), self.B.grad_fn=MmBackwards,
-        # and self.B.is_leaf=True
-        # self.B = torch.eye(4) @ torch.tensor([[0, 0],
-        #                                         [self.dt/self.m, 0],
-        #                                         [0, 0],
-        #                                         [0, self.dt/self.m]],
-        #                                         requires_grad=True)
         return
 
     def visualize(self, X, U, xf, block):

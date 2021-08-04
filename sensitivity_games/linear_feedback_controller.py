@@ -22,19 +22,21 @@ class LinearFeedbackController(RegulatorController):
         # http://www.mwm.im/lqr-controllers-with-python/
         # first, try to solve the ricatti equation
         X = torch.tensor(linalg.solve_discrete_are(self.dynamics.A,
-                                                   self.dynamics.B,
+                                                   self.dynamics.B.detach(),
                                                    Q,
                                                    R), dtype=torch.float32)
-        # compute the LQR gain
-        term1 = torch.tensor(linalg.inv(self.dynamics.B.T@X@self.dynamics.B+R),
-                             dtype=torch.float32)
 
-        term2 = self.dynamics.B.T@X@self.dynamics.A
-        return term1@term2
+        # compute the LQR gain
+        inv = linalg.inv((self.dynamics.B.T@X@self.dynamics.B).detach()+R)
+
+        term1 = torch.tensor(inv, dtype=torch.float32)
+        term2 = self.dynamics.B.T.detach()@X@self.dynamics.A
+        K = term1@term2
+        return K
 
     def get_eigenVals_eigenVecs(self):
         eigVals, eigVecs = linalg.eig(self.dynamics.A -
-                                      self.dynamics.B@self.K.detach())
+                                      self.dynamics.B.detach()@self.K.detach())
         return eigVals, eigVecs
 
     def get_control(self, x):

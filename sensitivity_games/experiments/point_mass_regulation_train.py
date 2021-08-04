@@ -40,7 +40,7 @@ def run_experiment():
     # create dynamics
     dynamics = PointMass(m=1,
                          dt=0.1,
-                         theta={'dm': torch.ones(1, requires_grad=True)})
+                         theta={'dm': torch.zeros(1, requires_grad=True)})
 
     # create controller
     controller = LinearFeedbackController(dynamics, xf)
@@ -55,7 +55,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
     # TODO: is this weight too high?
-    # traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
+    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
     optimizer_theta = torch.optim.Adam(dynamics.theta.values(),
@@ -84,7 +84,6 @@ def run_experiment():
         optimizer_theta.zero_grad()
 
         # dtotal/dtheta[dm], dtotal/dstate_cost dtotal/dcontrol_cost
-        # dynamics.theta['dm'].backward() # hack , but not correct
         total_cost.backward()
 
         optimizer_k.step()
@@ -92,7 +91,7 @@ def run_experiment():
 
         # print info
         if (n % args.verbose_freq == 0 and args.verbose) or n == args.epochs-1:
-            # eigVals, _ = controller.get_eigenVals_eigenVecs()
+            eigVals, _ = controller.get_eigenVals_eigenVecs()
             print("EPOCH: {}".format(n))
             print("total_cost: {}".format(total_cost))
             print("controller.K: {}".format(controller.K))
@@ -100,7 +99,7 @@ def run_experiment():
             print("dynamics.theta['dm']: {}".format(dynamics.theta['dm']))
             print("dynamics.theta['dm'].grad: {}".format(
                                                     dynamics.theta['dm'].grad))
-            # print("eigVals: {}".format(eigVals))
+            print("eigVals: {}".format(eigVals))
             print("x0: {}".format(x0))
             print("xf (goal): {}".format(xf))
             print("xf (actual): {}".format(X[-1]))
