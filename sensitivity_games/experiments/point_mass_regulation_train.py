@@ -9,8 +9,7 @@ from sensitivity_games.point_mass import PointMass
 from sensitivity_games.quadratic import Quadratic
 from sensitivity_games.trajectory_cost import TrajectoryCost
 
-import torch.optim
-import torch.tensor
+import torch
 
 
 def _setup_parser():
@@ -56,7 +55,7 @@ def run_experiment():
     traj_cost.addControlCost(Quadratic(n=0, d=1))  # y
 
     # TODO: is this weight too high?
-    traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
+    # traj_cost.addThetaCost('dm', Quadratic(n=0, d=0, weight=0))
 
     optimizer_k = torch.optim.Adam([controller.K], lr=args.lr)
     optimizer_theta = torch.optim.Adam(dynamics.theta.values(),

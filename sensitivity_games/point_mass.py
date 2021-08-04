@@ -1,6 +1,6 @@
 from sensitivity_games.linear import Linear
 from matplotlib import pyplot as plt
-import torch.tensor
+import torch
 
 
 class PointMass(Linear):
