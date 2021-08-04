@@ -99,7 +99,8 @@ def run_experiment():
             print("controller.K: {}".format(controller.K))
             print("controller.K.grad: {}".format(controller.K.grad))
             print("dynamics.theta['dm']: {}".format(dynamics.theta['dm']))
-            print("dynamics.theta['dm'].grad: {}".format(dynamics.theta['dm'].grad))
+            print("dynamics.theta['dm'].grad: {}".format(
+                                                    dynamics.theta['dm'].grad))
             # print("eigVals: {}".format(eigVals))
             print("x0: {}".format(x0))
             print("xf (goal): {}".format(xf))

@@ -87,11 +87,19 @@ class PointMass(Linear):
 
         # FIXME
         # packing self.m into self.B is losing self.theta['dm'] on comp graph
-        self.B = torch.tensor([[0, 0],
-                              [self.dt/self.m, 0],
-                              [0, 0],
-                              [0, self.dt/self.m]],
-                              requires_grad=True)
+        # self.B = torch.tensor([[0, 0],
+        #                       [self.dt/self.m, 0],
+        #                       [0, 0],
+        #                       [0, self.dt/self.m]],
+        #                       requires_grad=True)
+
+        # Whacky solution which may work
+        B1 = torch.tensor([0, 0])
+        B2 = torch.cat((self.dt/self.m, torch.tensor([0])))
+        B3 = torch.tensor([0, 0])
+        B4 = torch.cat((torch.tensor([0]), self.dt/self.m))
+
+        self.B = torch.stack((B1, B2, B3, B4))
 
         # interesting approach to kick this somewhere
         # by multiplying by torch.eye(4), self.B.grad_fn=MmBackwards,
