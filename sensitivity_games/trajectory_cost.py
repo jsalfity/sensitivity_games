@@ -1,4 +1,3 @@
-
 class TrajectoryCost(object):
     def __init__(self):
         self.state_costs = []

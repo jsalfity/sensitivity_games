@@ -1,6 +1,6 @@
 from sensitivity_games.linear import Linear
-from torch import Tensor
 from matplotlib import pyplot as plt
+import torch
 
 
 class PointMass(Linear):
@@ -44,18 +44,19 @@ class PointMass(Linear):
              [0 dt/m]]
         '''
         self.dt = dt
+        self.m_bar = m  # nominal
         self.m = m
         self.theta = theta
 
-        A = Tensor([[1, dt, 0, 0],
-                    [0, 1.0, 0, 0],
-                    [0, 0, 1.0, dt],
-                    [0, 0, 0, 1.0]])
+        A = torch.tensor([[1, dt, 0, 0],
+                         [0, 1.0, 0, 0],
+                         [0, 0, 1.0, dt],
+                         [0, 0, 0, 1.0]])
 
-        B = Tensor([[0, 0],
-                    [dt/m, 0],
-                    [0, 0],
-                    [0, dt/m]])
+        B = torch.tensor([[0, 0],
+                         [dt/m, 0],
+                         [0, 0],
+                         [0, dt/m]])
 
         super().__init__(A, B, theta)
 
@@ -82,12 +83,16 @@ class PointMass(Linear):
     def modify_B(self):
         '''
         '''
-        m = self.m * (1+self.theta['dm'])
+        self.m = self.m_bar * (1+self.theta['dm'])
 
-        self.B = Tensor([[0, 0],
-                        [self.dt/m, 0],
-                        [0, 0],
-                        [0, self.dt/m]])
+        # Insert self.theta['dm'] into self.B without losing on comp graph
+        B1 = torch.tensor([0, 0])
+        B2 = torch.cat((self.dt/self.m, torch.tensor([0])))
+        B3 = torch.tensor([0, 0])
+        B4 = torch.cat((torch.tensor([0]), self.dt/self.m))
+
+        self.B = torch.stack((B1, B2, B3, B4))
+        return
 
     def visualize(self, X, U, xf, block):
         '''
@@ -133,3 +138,4 @@ class PointMass(Linear):
 
         plt.show(block=block)
         plt.close()
+        return
